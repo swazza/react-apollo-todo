@@ -1,0 +1,25 @@
+{
+  "presets": [["env", {"modules": false}], "stage-2", "react"],
+  "env": {
+    "development": {
+      "plugins": [
+        "react-hot-loader/babel",
+        "transform-object-rest-spread"
+      ]
+    },
+
+    "test": {
+      "plugins": [
+        "transform-react-jsx",
+        "transform-object-rest-spread"
+      ]
+    },
+
+    "production": {
+      "plugins": [
+        "transform-react-jsx",
+        "transform-object-rest-spread"
+      ]
+    }
+  }
+}
