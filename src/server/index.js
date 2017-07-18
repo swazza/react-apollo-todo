@@ -1,13 +1,19 @@
 import fs from "fs";
 import path from "path";
 import express from "express";
+import bodyParser from "body-parser";
 import cors from "cors";
 import graphqlHTTP from "express-graphql";
 import fetch from "isomorphic-fetch";
+import { createServer } from "http";
+import { execute, subscribe } from "graphql";
+import { PubSub } from "graphql-subscriptions";
+import { SubscriptionServer } from "subscriptions-transport-ws";
 import { renderApp } from "./app";
 import { schema } from "./schema";
 import { rootResolvers } from "./resolvers";
 
+let PORT = 25000;
 let publicDir = `${process.cwd()}/dist/client`;
 let app = express();
 app.use("/public", express.static(publicDir));
@@ -20,6 +26,7 @@ app.use(
 );
 app.use(
   "/graphql",
+  bodyParser.json(),
   graphqlHTTP({
     schema,
     rootValue: rootResolvers,
@@ -27,14 +34,28 @@ app.use(
   })
 );
 
+const pubsub = new PubSub();
+const server = createServer(app);
+
 if (process.env.NODE_ENV !== "development") {
   let html = fs.readFileSync(path.resolve(publicDir, "index.html"), "utf8");
   app.get("*", (req, res) => {
     renderApp(html, req, res);
   });
 
-  app.listen(25000, () => {
-    console.log("App Started on Port 25000");
+  server.listen(PORT, () => {
+    console.log(`Server started on ${PORT}`);
+    new SubscriptionServer(
+      {
+        execute,
+        subscribe,
+        schema
+      },
+      {
+        server: server,
+        path: "/subscriptions"
+      }
+    );
   });
 } else {
   fetch("http://localhost:24000/index.html", { headers: { pragma: "no-cache", "cache-control": "no-cache" } })
@@ -44,8 +65,19 @@ if (process.env.NODE_ENV !== "development") {
         renderApp(html, req, res);
       });
 
-      app.listen(25000, () => {
-        console.log("App Started on Port 25000");
+      server.listen(PORT, () => {
+        console.log(`Server started on ${PORT}`);
+        new SubscriptionServer(
+          {
+            execute,
+            subscribe,
+            schema
+          },
+          {
+            server: server,
+            path: "/subscriptions"
+          }
+        );
       });
     });
 }

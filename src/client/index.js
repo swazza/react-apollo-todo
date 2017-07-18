@@ -4,6 +4,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { ConnectedRouter as Router, routerReducer, routerMiddleware, push } from "react-router-redux";
 import createHistory from "history/createBrowserHistory";
 import { ApolloClient, ApolloProvider, createNetworkInterface } from "react-apollo";
+import { SubscriptionClient, addGraphQLSubscriptions } from "subscriptions-transport-ws";
 import { StyleSheet } from "aphrodite";
 import { App } from "common/App";
 import { appStore, appReducers } from "pods";
@@ -11,9 +12,14 @@ import { dataIdFromObject, resolvers } from "resolvers";
 
 StyleSheet.rehydrate(window.__RENDERED_CLASS_NAMES);
 
+const wsClient = new SubscriptionClient(`ws://localhost:25000/subscriptions`, {
+  reconnect: true
+});
+
 const networkInterface = createNetworkInterface({ uri: process.env.gqlEndpoint }),
+  networkInterfaceWithSubscriptions = addGraphQLSubscriptions(networkInterface, wsClient),
   client = new ApolloClient({
-    networkInterface,
+    networkInterface: networkInterfaceWithSubscriptions,
     dataIdFromObject,
     customResolvers: { Query: { ...resolvers } },
     initialState: window.__PRELOADED_STATE__ || {},
