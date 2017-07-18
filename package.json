@@ -33,10 +33,10 @@
   },
   "dependencies": {
     "aphrodite": "^1.2.1",
+    "apollo-server-express": "^1.0.2",
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "express": "^4.15.3",
-    "express-graphql": "^0.6.6",
     "graphql": "^0.10.4",
     "graphql-anywhere": "^3.1.0",
     "graphql-subscriptions": "^0.4.4",
