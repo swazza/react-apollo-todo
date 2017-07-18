@@ -8,6 +8,14 @@ const queryResolvers = {
   todoItems: () => todoItems
 };
 
-const mutationResolvers = {};
+const mutationResolvers = {
+  createTodo: ({ name }) => {
+    let id = todoItems.length + 1,
+      newTodo = { id, name };
+
+    todoItems = [...todoItems, newTodo];
+    return { ...newTodo };
+  }
+};
 
 export const rootResolvers = { ...queryResolvers, ...mutationResolvers };

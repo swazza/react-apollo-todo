@@ -29,8 +29,17 @@ export const withQuery = (query, options = {}) => WrappedComponent => graphql(gq
 export const withMutation = (mutation, options = {}) => WrappedComponent =>
   graphql(gql`${mutation}`, options)(WrappedComponent);
 
-export const withState = (selector, actions) => WrappedComponent =>
-  connect(
-    (state, ownProps) => ({ ...selector(state), ...ownProps }),
-    dispatch => bindActionCreators({ ...actions }, dispatch)
-  )(WrappedComponent);
+export const withState = (selector, actions) => WrappedComponent => {
+  const mapStateToProps = (state, ownProps) => {
+    return {
+      ...selector(state),
+      ...ownProps
+    };
+  };
+
+  const mapDispatchToProps = dispatch => {
+    return bindActionCreators({ ...actions }, dispatch);
+  };
+
+  return connect(mapStateToProps, mapDispatchToProps)(WrappedComponent);
+};

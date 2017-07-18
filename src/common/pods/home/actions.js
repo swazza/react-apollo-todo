@@ -1,0 +1,2 @@
+export const UPDATE_NEW_TODO = "UPDATE_NEW_TODO";
+export const RESET_NEW_TODO = "RESET_NEW_TODO";

@@ -1,3 +1,9 @@
-export const appReducers = {};
+import { homeStore, homeReducers } from "./home";
 
-export const appStore = {};
+export const appReducers = {
+  ...homeReducers
+};
+
+export const appStore = {
+  ...homeStore
+};

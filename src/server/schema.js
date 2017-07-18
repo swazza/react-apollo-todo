@@ -5,6 +5,10 @@ export const schema = buildSchema(`
     todoItems: [Todo]
   }
 
+  type Mutation {
+    createTodo(name: String): Todo
+  }
+
   type Todo {
     id: ID
     name: String
