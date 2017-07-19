@@ -3,11 +3,10 @@ import path from "path";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import graphqlHTTP from "express-graphql";
+import { graphqlExpress, graphiqlExpress } from "graphql-server-express";
 import fetch from "isomorphic-fetch";
 import { createServer } from "http";
 import { execute, subscribe } from "graphql";
-import { PubSub } from "graphql-subscriptions";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { renderApp } from "./app";
 import { schema } from "./schema";
@@ -27,14 +26,20 @@ app.use(
 app.use(
   "/graphql",
   bodyParser.json(),
-  graphqlHTTP({
+  graphqlExpress({
     schema,
-    rootValue: rootResolvers,
     graphiql: true
   })
 );
 
-const pubsub = new PubSub();
+app.use(
+  "/graphiql",
+  graphiqlExpress({
+    endpointURL: "/graphql",
+    subscriptionsEndpoint: `ws://localhost:3000/subscriptions`
+  })
+);
+
 const server = createServer(app);
 
 if (process.env.NODE_ENV !== "development") {

@@ -1,6 +1,7 @@
-import { buildSchema } from "graphql";
+import { makeExecutableSchema } from "graphql-tools";
+import { resolvers } from "./resolvers";
 
-export const schema = buildSchema(`
+const typeDefs = `
   type Query {
     todoItems: [Todo]
   }
@@ -9,8 +10,17 @@ export const schema = buildSchema(`
     createTodo(name: String): Todo
   }
 
+  type Subscription {
+    todoAdded: Todo
+  }
+
   type Todo {
     id: ID
     name: String
   }
-`);
+`;
+
+export const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+});
